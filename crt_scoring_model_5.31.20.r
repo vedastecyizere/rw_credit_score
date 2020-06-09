@@ -1070,7 +1070,8 @@ all_data1 <- all_data %>%
                        gl.score = sum(gl.score, na.rm = T),
                        healthy.path.score = sum(hpf.score, na.rm = T),
                        credit.size.score = sum(credit.size.score, na.rm = T),
-                       defaulting.score = sum(defaulting.score, na.rm = T))
+                       defaulting.score = sum(defaulting.score, na.rm = T),
+                       maximum.credit = round(max(TotalCredit)*1.1, digits = -2))
 
 
 head(all_data1)
