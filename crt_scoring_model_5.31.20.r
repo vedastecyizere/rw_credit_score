@@ -1027,16 +1027,65 @@ all_data <- rbind(d201, d191, d181, d171, d161, d151, d141, d13b2, d12b2)
 save(all_data, file = paste(wd,"all_data_for_the_model.Rdata", sep ="/"))
 write.table(all_data, file = paste(od, "all_data_for_the_model.csv", sep = "/"),
             row.names = FALSE, col.names = TRUE, sep = ",")
-
-
-
+#loading data
+load(file = paste(wd,"all_data_for_the_model.Rdata", sep ="/"))
 ################################################################################
+#summarizing our data on farmerlevel
+dim(all_data)
+head(all_data)
+
+#Let's turn everything into scores
+table(all_data$Facilitator, useNA = "ifany")
+all_data$gl.score <- ifelse(all_data$Facilitator == "True", 0.25, 0)
+#check 
+table(all_data$gl.score, useNA = "ifany")
+
+#Score for Performance against the health path 
+all_data$hpf.score <- ifelse(all_data$perc.on.hpf > 75, 0.5, 
+                             ifelse(all_data$perc.on.hpf >= 50 & all_data$perc.on.hpf <= 75, 0.25, 0))
+#check
+table(all_data$hpf.score, useNA = "ifany")
+table(all_data$perc.on.hpf, useNA = "ifany")
+length(all_data$GlobalClientID[all_data$perc.on.hpf < 50 & !is.na(all_data$perc.on.hpf)])
+
+#Generating scores for credit size
+table(all_data$credit.size, useNA = "ifany")
+
+all_data$credit.size.score <- ifelse(all_data$credit.size == "High", 0.25, 
+                               ifelse(all_data$credit.size == "Medium", 0.125, 0))
+#check
+table(all_data$credit.size.score, useNA = "ifany")
+
+#For defaulters
+all_data$defaulting.score <- ifelse(all_data$rpd.jul < 100, -1, 0)
+
+#check
+table(all_data$defaulting.score, useNA = "ifany")
+
+#Now, let's put this information on clients level
+#To fix district issues later
+all_data1 <- all_data %>%
+             group_by(LastName, FirstName, GlobalClientID) %>%
+             summarise(n.season.score = max(TotalEnrolledSeasons, na.rm = T),
+                       gl.score = sum(gl.score, na.rm = T),
+                       healthy.path.score = sum(hpf.score, na.rm = T),
+                       credit.size.score = sum(credit.size.score, na.rm = T),
+                       defaulting.score = sum(defaulting.score, na.rm = T))
 
 
+head(all_data1)
+View(all_data1)
 
-
-
-
+#creating  total score column
+all_data1$total.score <- all_data1$n.season.score + 
+                         all_data1$gl.score + 
+                         all_data1$healthy.path.score + 
+                         all_data1$credit.size.score + 
+                         all_data1$defaulting.score
+#Let's export the final output
+save(all_data1, file = paste(wd,"credit_scoring_model_6.9.2020.Rdata", sep ="/"))
+write.table(all_data1, file = paste(od, "credit_scoring_model_6.9.2020.csv", sep = "/"),
+            row.names = FALSE, col.names = TRUE, sep = ",")
 
 
 
