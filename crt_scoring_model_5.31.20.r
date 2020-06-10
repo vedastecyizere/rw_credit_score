@@ -4,8 +4,8 @@
 
 #Loading directories
 dd <- "D:/GitHub/rw_credit_score/data"
-wd <- "D:/GitHub/pshops_database/rdata"
-od <- "D:/GitHub/pshops_database/output"
+wd <- "D:/GitHub/rw_credit_score/rdata"
+od <- "D:/GitHub/rw_credit_score/output"
 
 #Libraries
 libs <- c("lubridate", "plyr", "zoo", "reshape2", "ggplot2", "dplyr","doBy","reshape")
@@ -1083,10 +1083,117 @@ all_data1$total.score <- all_data1$n.season.score +
                          all_data1$healthy.path.score + 
                          all_data1$credit.size.score + 
                          all_data1$defaulting.score
+
+
+#Now, we are going to add updated group name, site, district, and region
+all_data1$DistrictName <- d20$DistrictName[match(all_data1$GlobalClientID, d20$GlobalClientID)]
+all_data1$SiteName <- d20$SiteName[match(all_data1$GlobalClientID, d20$GlobalClientID)]
+all_data1$GroupName <- d20$GroupName[match(all_data1$GlobalClientID, d20$GlobalClientID)]
+all_data1$gov.district <- d20$GovLocationGrandParent[match(all_data1$GlobalClientID, d20$GlobalClientID)]
+all_data1$gov.sector <- d20$GovLocationParent[match(all_data1$GlobalClientID, d20$GlobalClientID)]
+all_data1$gov.cell <- d20$GovLocationChild[match(all_data1$GlobalClientID, d20$GlobalClientID)]
+all_data1$gov.village <- d20$GovLocationGrandChild[match(all_data1$GlobalClientID, d20$GlobalClientID)]
+
+#Given NAs, let's also add locations from 2019 
+all_data1$DistrictName.19 <- d19$DistrictName[match(all_data1$GlobalClientID, d19$GlobalClientID)]
+all_data1$SiteName.19 <- d19$SiteName[match(all_data1$GlobalClientID, d19$GlobalClientID)]
+all_data1$GroupName.19 <- d19$GroupName[match(all_data1$GlobalClientID, d19$GlobalClientID)]
+all_data1$gov.district.19 <- d19$GovLocationGrandParent[match(all_data1$GlobalClientID, d19$GlobalClientID)]
+all_data1$gov.sector.19 <- d19$GovLocationParent[match(all_data1$GlobalClientID, d19$GlobalClientID)]
+all_data1$gov.cell.19 <- d19$GovLocationChild[match(all_data1$GlobalClientID, d19$GlobalClientID)]
+all_data1$gov.village.19 <- d19$GovLocationGrandChild[match(all_data1$GlobalClientID, d19$GlobalClientID)]
+
+all_data1$DistrictName.18 <- d18$DistrictName[match(all_data1$GlobalClientID, d18$GlobalClientID)]
+all_data1$SiteName.18 <- d18$SiteName[match(all_data1$GlobalClientID, d18$GlobalClientID)]
+all_data1$GroupName.18 <- d18$GroupName[match(all_data1$GlobalClientID, d18$GlobalClientID)]
+all_data1$gov.district.18 <- d18$GovLocationGrandParent[match(all_data1$GlobalClientID, d18$GlobalClientID)]
+all_data1$gov.sector.18 <- d18$GovLocationParent[match(all_data1$GlobalClientID, d18$GlobalClientID)]
+all_data1$gov.cell.18 <- d18$GovLocationChild[match(all_data1$GlobalClientID, d18$GlobalClientID)]
+all_data1$gov.village.18 <- d18$GovLocationGrandChild[match(all_data1$GlobalClientID, d18$GlobalClientID)]
+
+#2017
+all_data1$DistrictName.17 <- d17$DistrictName[match(all_data1$GlobalClientID, d17$GlobalClientID)]
+all_data1$SiteName.17 <- d17$SiteName[match(all_data1$GlobalClientID, d17$GlobalClientID)]
+all_data1$GroupName.17 <- d17$GroupName[match(all_data1$GlobalClientID, d17$GlobalClientID)]
+all_data1$gov.district.17 <- d17$GovLocationGrandParent[match(all_data1$GlobalClientID, d17$GlobalClientID)]
+all_data1$gov.sector.17 <- d17$GovLocationParent[match(all_data1$GlobalClientID, d17$GlobalClientID)]
+all_data1$gov.cell.17 <- d17$GovLocationChild[match(all_data1$GlobalClientID, d17$GlobalClientID)]
+all_data1$gov.village.17 <- d17$GovLocationGrandChild[match(all_data1$GlobalClientID, d17$GlobalClientID)]
+
+
+#Now, let's say where NA in 2019, replace with 2019, if NA again, put 2018
+all_data1$DistrictName1 <- ifelse(is.na(all_data1$DistrictName), 
+                                  all_data1$DistrictName.19, all_data1$DistrictName)
+all_data1$SiteName1 <- ifelse(is.na(all_data1$SiteName), 
+                                  all_data1$SiteName.19, all_data1$SiteName)
+all_data1$GroupName1 <- ifelse(is.na(all_data1$GroupName), 
+                                  all_data1$GroupName.19, all_data1$GroupName)
+all_data1$gov.district1 <- ifelse(is.na(all_data1$gov.district), 
+                                  all_data1$gov.district.19, all_data1$gov.district)
+all_data1$gov.sector1 <- ifelse(is.na(all_data1$gov.sector), 
+                                  all_data1$gov.sector.19, all_data1$gov.sector)
+all_data1$gov.cell1 <- ifelse(is.na(all_data1$gov.cell), 
+                                  all_data1$gov.cell.19, all_data1$gov.cell)
+all_data1$gov.village1 <- ifelse(is.na(all_data1$gov.village), 
+                                  all_data1$gov.village.19, all_data1$gov.village)
+
+#Let's also do this for 2018
+all_data1$DistrictName2 <- ifelse(is.na(all_data1$DistrictName1), 
+                                  all_data1$DistrictName.18, all_data1$DistrictName1)
+all_data1$SiteName2 <- ifelse(is.na(all_data1$SiteName1), 
+                              all_data1$SiteName.18, all_data1$SiteName1)
+all_data1$GroupName2 <- ifelse(is.na(all_data1$GroupName1), 
+                               all_data1$GroupName.18, all_data1$GroupName1)
+all_data1$gov.district2 <- ifelse(is.na(all_data1$gov.district1), 
+                                  all_data1$gov.district.18, all_data1$gov.district1)
+all_data1$gov.sector2 <- ifelse(is.na(all_data1$gov.sector1), 
+                                all_data1$gov.sector.18, all_data1$gov.sector1)
+all_data1$gov.cell2 <- ifelse(is.na(all_data1$gov.cell1), 
+                              all_data1$gov.cell.18, all_data1$gov.cell1)
+all_data1$gov.village2 <- ifelse(is.na(all_data1$gov.village1), 
+                                 all_data1$gov.village.18, all_data1$gov.village1)
+
+#check
+table(all_data1$DistrictName2, useNA = "ifany") #286, 995
+table(all_data1$gov.sector2, useNA = "ifany")
+
+#Let's now addd 2017
+all_data1$DistrictName3 <- ifelse(is.na(all_data1$DistrictName2), 
+                                  all_data1$DistrictName.17, all_data1$DistrictName2)
+all_data1$SiteName3 <- ifelse(is.na(all_data1$SiteName2), 
+                              all_data1$SiteName.17, all_data1$SiteName2)
+all_data1$GroupName3 <- ifelse(is.na(all_data1$GroupName2), 
+                               all_data1$GroupName.17, all_data1$GroupName2)
+all_data1$gov.district3 <- ifelse(is.na(all_data1$gov.district2), 
+                                  all_data1$gov.district.17, all_data1$gov.district2)
+all_data1$gov.sector3 <- ifelse(is.na(all_data1$gov.sector2), 
+                                all_data1$gov.sector.17, all_data1$gov.sector2)
+all_data1$gov.cell3 <- ifelse(is.na(all_data1$gov.cell2), 
+                              all_data1$gov.cell.17, all_data1$gov.cell2)
+all_data1$gov.village3 <- ifelse(is.na(all_data1$gov.village2), 
+                                 all_data1$gov.village.17, all_data1$gov.village2)
+
+#check
+table(all_data1$DistrictName3, useNA = "ifany")
+table(all_data1$gov.cell3, useNA = "ifany")
+
+#To continue when all account number data are available
+#Enough for the first draft
+
+#Getting only column we needs
+c <- c("DistrictName3", "SiteName3", "GroupName3", "gov.district3", "gov.sector3",
+       "gov.cell3", "gov.village3", "FirstName", "LastName", "GlobalClientID",
+       "n.season.score","healthy.path.score","gl.score", "credit.size.score", "defaulting.score", 
+       "total.score", "maximum.credit")
+#Let's do
+all_data2 <- all_data1[c]
+
 #Let's export the final output
-save(all_data1, file = paste(wd,"credit_scoring_model_6.9.2020.Rdata", sep ="/"))
-write.table(all_data1, file = paste(od, "credit_scoring_model_6.9.2020.csv", sep = "/"),
+save(all_data2, file = paste(wd,"credit_scoring_model_6.9.2020.Rdata", sep ="/"))
+write.table(all_data2, file = paste(od, "credit_scoring_model_6.9.2020.csv", sep = "/"),
             row.names = FALSE, col.names = TRUE, sep = ",")
+
+
 
 
 
